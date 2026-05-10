@@ -43,6 +43,18 @@ p, li { color: #5c5f62; line-height: 1.7; font-size: 16px; }
 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .card { border: 1px solid #dfe3e8; border-radius: 8px; padding: 18px; }
 main.page { max-width: 860px; margin: 0 auto; padding: 56px 24px; }
+.pricing-plan {
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+  padding: 22px;
+  margin: 22px 0;
+  max-width: 420px;
+}
+.plan-name { color: #202223; font-weight: 650; margin: 0 0 12px; }
+.plan-price { color: #202223; font-size: 42px; line-height: 1; font-weight: 700; margin: 0 0 8px; }
+.plan-price span { color: #5c5f62; font-size: 18px; font-weight: 500; }
+.plan-note, .plan-trial { margin: 0 0 10px; }
+.pricing-plan ul { padding-left: 20px; margin: 18px 0 0; }
 .demo-video {
   width: 100%;
   margin-top: 24px;
