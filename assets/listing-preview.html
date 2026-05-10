@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PriceDropper Listing Preview</title>
+    <style>
+      :root {
+        color: #202223;
+        background: #f6f6f7;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; width: 1600px; height: 900px; overflow: hidden; }
+      .frame {
+        width: 1600px;
+        height: 900px;
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        background: #f6f6f7;
+      }
+      .sidebar {
+        background: #ffffff;
+        border-right: 1px solid #dfe3e8;
+        padding: 28px 18px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 34px;
+      }
+      .mark {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        background: #202223;
+        color: #ffffff;
+      }
+      .nav {
+        height: 42px;
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        border-radius: 8px;
+        color: #5c5f62;
+        font-size: 17px;
+        margin: 3px 0;
+      }
+      .nav.active { background: #202223; color: #ffffff; }
+      main { min-width: 0; }
+      .topbar {
+        height: 98px;
+        background: #ffffff;
+        border-bottom: 1px solid #dfe3e8;
+        padding: 22px 34px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      h1 {
+        font-size: 28px;
+        line-height: 1.1;
+        margin: 0 0 7px;
+        letter-spacing: 0;
+      }
+      .sub { color: #6d7175; font-size: 17px; }
+      .actions { display: flex; gap: 12px; }
+      .btn {
+        border: 1px solid #c9cccf;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 12px 18px;
+        font-weight: 650;
+        font-size: 16px;
+      }
+      .btn.primary { background: #202223; color: #ffffff; border-color: #202223; }
+      .content { padding: 34px; }
+      .grid { display: grid; gap: 22px; }
+      .metrics { grid-template-columns: repeat(4, 1fr); }
+      .two { grid-template-columns: 1fr 1fr; }
+      .card {
+        background: #ffffff;
+        border: 1px solid #dfe3e8;
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
+      }
+      .label { color: #6d7175; font-size: 16px; margin-bottom: 14px; }
+      .metric { font-size: 44px; font-weight: 700; }
+      h2 { margin: 0 0 18px; font-size: 21px; }
+      table { width: 100%; border-collapse: collapse; font-size: 16px; }
+      th, td { text-align: left; border-bottom: 1px solid #edf0f2; padding: 13px 10px; }
+      th { background: #f6f6f7; color: #4a5568; font-weight: 650; }
+      .badge { border-radius: 999px; padding: 4px 10px; font-size: 14px; background: #e3f1df; color: #0a5f23; }
+      .badge.warn { background: #fff4d6; color: #7a4d00; }
+      .form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+      .field { display: grid; gap: 8px; color: #4a5568; font-size: 16px; }
+      .input {
+        border: 1px solid #c9cccf;
+        border-radius: 7px;
+        min-height: 46px;
+        background: #ffffff;
+        padding: 11px 13px;
+        color: #202223;
+      }
+      .wide { grid-column: 1 / -1; }
+      .workflow {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-top: 22px;
+      }
+      .step {
+        background: #ffffff;
+        border: 1px solid #dfe3e8;
+        border-radius: 8px;
+        padding: 22px;
+        min-height: 170px;
+      }
+      .step strong { display: block; font-size: 20px; margin-bottom: 12px; }
+      .step p { margin: 0; color: #5c5f62; font-size: 16px; line-height: 1.5; }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 30px;
+        align-items: stretch;
+      }
+      .hero h1 { font-size: 50px; max-width: 700px; }
+      .hero p { color: #5c5f62; font-size: 21px; line-height: 1.45; margin: 0; }
+      .miniapp { background: #ffffff; border: 1px solid #dfe3e8; border-radius: 8px; overflow: hidden; }
+      .miniapp .bar { height: 54px; display: flex; align-items: center; padding: 0 18px; border-bottom: 1px solid #dfe3e8; gap: 8px; }
+      .dot { width: 12px; height: 12px; border-radius: 50%; background: #c9cccf; }
+      .miniapp .inside { padding: 22px; }
+      .line { height: 16px; border-radius: 999px; background: #dfe3e8; margin: 12px 0; }
+      .line.short { width: 62%; }
+      .line.med { width: 80%; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      const view = new URLSearchParams(location.search).get("view") || "feature";
+      const navItems = ["Dashboard", "Rules", "Filters", "Rounding", "Simulate", "Run Scan", "Logs", "Billing"];
+      const activeMap = { feature: "Dashboard", dashboard: "Dashboard", rules: "Rules", logs: "Logs" };
+      function shell(title, sub, content) {
+        document.getElementById("root").innerHTML = `
+          <div class="frame">
+            <aside class="sidebar">
+              <div class="brand"><span class="mark">P</span><span>PriceDropper</span></div>
+              ${navItems.map((item) => `<div class="nav ${activeMap[view] === item ? "active" : ""}">${item}</div>`).join("")}
+            </aside>
+            <main>
+              <div class="topbar">
+                <div><h1>${title}</h1><div class="sub">${sub}</div></div>
+                <div class="actions"><div class="btn">Sync catalog</div><div class="btn primary">Run scan</div></div>
+              </div>
+              <section class="content">${content}</section>
+            </main>
+          </div>
+        `;
+      }
+      if (view === "feature") {
+        shell("Dashboard", "Inventory-based markdown automation for Shopify.", `
+          <div class="hero">
+            <div class="card">
+              <h1>Preview inventory markdowns before live updates run.</h1>
+              <p>PriceDropper helps teams sync catalog data, configure low-stock rules, run dry-run scans, and review change logs before applying live updates.</p>
+              <div class="workflow">
+                <div class="step"><strong>Sync</strong><p>Import products, variants, and inventory from Shopify Admin.</p></div>
+                <div class="step"><strong>Rules</strong><p>Set thresholds, rounding, restore behavior, and safety limits.</p></div>
+                <div class="step"><strong>Dry run</strong><p>Preview planned updates without writing to Shopify.</p></div>
+                <div class="step"><strong>Review</strong><p>Check logs, skipped variants, and restore activity.</p></div>
+              </div>
+            </div>
+            <div class="miniapp">
+              <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <div class="inside">
+                <div class="grid metrics">
+                  <div class="card"><div class="label">Products</div><div class="metric">124</div></div>
+                  <div class="card"><div class="label">Low stock</div><div class="metric">18</div></div>
+                </div>
+                <div class="line"></div><div class="line med"></div><div class="line short"></div>
+                <table><tr><th>Action</th><th>Status</th></tr><tr><td>Dry run</td><td><span class="badge">Ready</span></td></tr><tr><td>Restore</td><td><span class="badge warn">Queued</span></td></tr></table>
+              </div>
+            </div>
+          </div>
+        `);
+      } else if (view === "rules") {
+        shell("Pricing Rules", "Set threshold rules for low-stock variants.", `
+          <div class="card">
+            <h2>Rule configuration</h2>
+            <div class="form">
+              <div class="field"><span>Rule A type</span><div class="input">Percent</div></div>
+              <div class="field"><span>Rule A value</span><div class="input">15</div></div>
+              <div class="field"><span>Rule B type</span><div class="input">Amount</div></div>
+              <div class="field"><span>Rule B value</span><div class="input">5.00</div></div>
+              <div class="field"><span>Compare-at behavior</span><div class="input">Set original value</div></div>
+              <div class="field"><span>Restore when restocked</span><div class="input">Enabled</div></div>
+            </div>
+          </div>
+          <div class="grid two" style="margin-top:22px">
+            <div class="card"><h2>Safety controls</h2><table><tr><td>Dry run mode</td><td><span class="badge">Enabled</span></td></tr><tr><td>Floor value</td><td>$9.00</td></tr><tr><td>Ceiling discount</td><td>35%</td></tr></table></div>
+            <div class="card"><h2>Restore workflow</h2><table><tr><td>Restock threshold</td><td>8 units</td></tr><tr><td>Restore delay</td><td>30 minutes</td></tr><tr><td>Snapshot source</td><td>Original value</td></tr></table></div>
+          </div>
+        `);
+      } else if (view === "logs") {
+        shell("Activity Logs", "Review updates, restores, and skipped variants.", `
+          <div class="card">
+            <h2>Recent activity</h2>
+            <table>
+              <thead><tr><th>Action</th><th>Status</th><th>Old</th><th>New</th><th>Message</th></tr></thead>
+              <tbody>
+                <tr><td>Dry run</td><td><span class="badge">Previewed</span></td><td>$49.00</td><td>$41.65</td><td>Low-stock threshold matched</td></tr>
+                <tr><td>Update</td><td><span class="badge">Completed</span></td><td>$39.00</td><td>$34.00</td><td>Amount rule applied</td></tr>
+                <tr><td>Restore</td><td><span class="badge">Completed</span></td><td>$34.00</td><td>$39.00</td><td>Inventory restocked</td></tr>
+                <tr><td>Skipped</td><td><span class="badge warn">Review</span></td><td>$29.00</td><td>-</td><td>Floor value would be exceeded</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `);
+      } else {
+        shell("Dashboard", "Inventory-based markdown automation for Shopify.", `
+          <div class="grid metrics">
+            <div class="card"><div class="label">Products</div><div class="metric">124</div></div>
+            <div class="card"><div class="label">Variants</div><div class="metric">386</div></div>
+            <div class="card"><div class="label">Low stock</div><div class="metric">18</div></div>
+            <div class="card"><div class="label">24h updates</div><div class="metric">7</div></div>
+          </div>
+          <div class="grid two" style="margin-top:22px">
+            <div class="card"><h2>Recent jobs</h2><table><tr><th>Type</th><th>Status</th><th>Progress</th></tr><tr><td>Catalog sync</td><td><span class="badge">Done</span></td><td>100%</td></tr><tr><td>Dry run</td><td><span class="badge">Done</span></td><td>100%</td></tr><tr><td>Restore</td><td><span class="badge warn">Queued</span></td><td>25%</td></tr></table></div>
+            <div class="card"><h2>Recent changes</h2><table><tr><th>Variant</th><th>Status</th><th>Result</th></tr><tr><td>Classic tee / M</td><td><span class="badge">Previewed</span></td><td>15% markdown</td></tr><tr><td>Canvas tote</td><td><span class="badge">Updated</span></td><td>Restored</td></tr><tr><td>Travel mug</td><td><span class="badge warn">Skipped</span></td><td>Safety limit</td></tr></table></div>
+          </div>
+        `);
+      }
+    </script>
+  </body>
+</html>
